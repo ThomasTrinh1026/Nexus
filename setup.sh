@@ -52,10 +52,17 @@ else
   say "whatsapp-mcp already present — leaving it as-is (delete the folder to re-clone)."
 fi
 
-# --- 4. Pre-build the bridge so go.sum is synced and errors surface now ----------
-say "Building the WhatsApp bridge (downloads deps, verifies it compiles)..."
-( cd "$BRIDGE_REPO/whatsapp-bridge" && go mod tidy && go build -o /dev/null ./... )
-say "Bridge builds OK."
+# --- 4. Update whatsmeow to latest + pre-build so errors surface now -------------
+# WhatsApp periodically raises its minimum client version and rejects older
+# whatsmeow builds with "Client outdated (405)" at connect time. Pulling @latest
+# at setup keeps the reported client version current. (This supersedes the
+# baseline version the PR #193 patch wrote into go.mod.)
+say "Updating whatsmeow to the latest version (avoids WhatsApp 'Client outdated' 405)..."
+( cd "$BRIDGE_REPO/whatsapp-bridge" \
+    && go get go.mau.fi/whatsmeow@latest \
+    && go mod tidy \
+    && go build -o /dev/null ./... )
+say "Bridge builds OK against the latest whatsmeow."
 
 # --- 5. Generate .mcp.json for THIS machine -------------------------------------
 say "Google Sheets setup (optional — press Enter at both prompts to skip)."

@@ -25,6 +25,18 @@ linking WhatsApp. Run `./setup.sh` first.
 If the bridge fails to build, see [`patches/README.md`](patches/README.md) — the
 Go-compatibility fix should already be applied by `setup.sh`.
 
+### "Client outdated (405)" when starting the bridge
+
+```
+[Client ERROR] Client outdated (405) connect failure
+```
+
+WhatsApp has raised its minimum client version and your `whatsmeow` library is now
+too old. Fix: **re-run `./setup.sh`** — it runs `go get whatsmeow@latest` and
+rebuilds, which refreshes the reported client version. Then start the bridge
+again. (See [`patches/README.md`](patches/README.md) for why the dependency is
+pulled latest rather than pinned.)
+
 ## Google Sheets (service account — recommended)
 
 A service account is a headless Google identity. You give it access to specific
