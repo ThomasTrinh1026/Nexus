@@ -9,7 +9,7 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BRIDGE_REPO="$REPO_DIR/whatsapp-mcp"
-PATCH="$REPO_DIR/patches/whatsmeow-context-fix.patch"
+PATCH_DIR="$REPO_DIR/patches"
 
 # Pin to the upstream commit the patch was built against, so `git apply` is always
 # clean no matter how far upstream main has moved. (See patches/README.md.)
@@ -46,8 +46,12 @@ if [ ! -d "$BRIDGE_REPO/.git" ]; then
   git clone https://github.com/lharries/whatsapp-mcp.git "$BRIDGE_REPO"
   git -C "$BRIDGE_REPO" checkout --quiet "$PINNED_COMMIT"
 
-  say "Applying whatsmeow/Go compatibility patch (upstream PR #193)..."
-  git -C "$BRIDGE_REPO" apply "$PATCH"
+  say "Applying compatibility patches (see patches/README.md)..."
+  for p in "$PATCH_DIR"/*.patch; do
+    [ -e "$p" ] || continue
+    echo "  - $(basename "$p")"
+    git -C "$BRIDGE_REPO" apply "$p"
+  done
 else
   say "whatsapp-mcp already present — leaving it as-is (delete the folder to re-clone)."
 fi

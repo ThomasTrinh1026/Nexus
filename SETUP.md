@@ -37,6 +37,14 @@ rebuilds, which refreshes the reported client version. Then start the bridge
 again. (See [`patches/README.md`](patches/README.md) for why the dependency is
 pulled latest rather than pinned.)
 
+### "Invalid QR code" / "Código QR no válido" on your phone
+
+Two usual causes: the QR **expired** (they rotate every ~20–30s — scan the newest
+one, fast), or the terminal **mangled** it (zoom the terminal out with `Cmd –` so
+the whole QR fits on screen without line-wrapping). The kit already patches the
+bridge to use a more scannable full-block QR (`patches/qr-fullblock.patch`); make
+sure you've re-run `./setup.sh` and **restarted** the bridge so it's in effect.
+
 ## Google Sheets (service account — recommended)
 
 A service account is a headless Google identity. You give it access to specific

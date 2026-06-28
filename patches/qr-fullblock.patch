@@ -1,0 +1,11 @@
+--- a/whatsapp-bridge/main.go
++++ b/whatsapp-bridge/main.go
+@@ -870,7 +870,7 @@
+ 		for evt := range qrChan {
+ 			if evt.Event == "code" {
+ 				fmt.Println("\nScan this QR code with your WhatsApp app:")
+-				qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
++				qrterminal.Generate(evt.Code, qrterminal.M, os.Stdout)
+ 			} else if evt.Event == "success" {
+ 				connected <- true
+ 				break
