@@ -1,9 +1,7 @@
 # patches/
 
 Patches applied to the upstream [whatsapp-mcp](https://github.com/lharries/whatsapp-mcp)
-clone by `setup.sh`. Every `*.patch` here is applied (in filename order) right
-after the pinned checkout; they touch disjoint regions of `main.go`, so order
-doesn't matter.
+clone by `setup.sh`.
 
 ## whatsmeow-context-fix.patch
 
@@ -18,20 +16,6 @@ argument, and the build fails with `not enough arguments in call to ...`.
 that need it (`Download`, `sqlstore.New`, `GetFirstDevice`, `GetGroupInfo`,
 `GetContact`). It also bumps `whatsmeow` in `go.mod`, but that line is only a
 **baseline** — see below.
-
-## qr-fullblock.patch
-
-Makes the pairing QR code reliably scannable.
-
-**Problem it fixes:** the bridge prints the QR with
-`qrterminal.GenerateHalfBlock(..., qrterminal.L, ...)` — half-block characters
-with **low** error-correction. Half-block glyphs render with small vertical gaps
-in many terminals/fonts, distorting the code so WhatsApp rejects it as
-*"Código QR no válido" / "Invalid QR code."*
-
-**The fix (1 line):** switch to `qrterminal.Generate(..., qrterminal.M, ...)` —
-full-block characters with **medium** error-correction. The QR is taller (zoom the
-terminal out so it fits without wrapping), but scans far more reliably.
 
 ## Two different "pins" — don't conflate them
 
