@@ -74,10 +74,27 @@ cat <<'EOF'
        (the "client_email" in that JSON, ends in ...iam.gserviceaccount.com)
   Skip this if you only want WhatsApp — you can fill it in later by editing .mcp.json.
 EOF
-read -r -p "  Path to the service-account JSON key: " SA_PATH || true
-read -r -p "  Google Drive folder ID (from the folder's URL): " DRIVE_ID || true
-SA_PATH="${SA_PATH:-/REPLACE/with/path/to/service-account-key.json}"
-DRIVE_ID="${DRIVE_ID:-REPLACE_with_shared_drive_folder_id}"
+# Reuse values already in .mcp.json so re-running setup doesn't clobber them.
+PLACEHOLDER_SA="/REPLACE/with/path/to/service-account-key.json"
+PLACEHOLDER_DRIVE="REPLACE_with_shared_drive_folder_id"
+mcp_value() {  # $1 = JSON key -> prints its current value from .mcp.json, if any
+  [ -f "$REPO_DIR/.mcp.json" ] || return 0
+  grep -o "\"$1\": *\"[^\"]*\"" "$REPO_DIR/.mcp.json" | head -1 | sed 's/.*: *"//; s/"$//'
+}
+PREV_SA="$(mcp_value SERVICE_ACCOUNT_PATH)"
+PREV_DRIVE="$(mcp_value DRIVE_FOLDER_ID)"
+[ "$PREV_SA" = "$PLACEHOLDER_SA" ] && PREV_SA=""        # leftover placeholder = not set
+[ "$PREV_DRIVE" = "$PLACEHOLDER_DRIVE" ] && PREV_DRIVE=""
+
+if [ -n "$PREV_SA" ] || [ -n "$PREV_DRIVE" ]; then
+  say "Found existing Google settings — press Enter at a prompt to keep the current value."
+fi
+
+read -r -p "  Path to the service-account JSON key${PREV_SA:+ [keep: $PREV_SA]}: " SA_PATH || true
+read -r -p "  Google Drive folder ID${PREV_DRIVE:+ [keep: $PREV_DRIVE]}: " DRIVE_ID || true
+# Precedence: what you typed > existing value > placeholder.
+SA_PATH="${SA_PATH:-${PREV_SA:-$PLACEHOLDER_SA}}"
+DRIVE_ID="${DRIVE_ID:-${PREV_DRIVE:-$PLACEHOLDER_DRIVE}}"
 
 cat > "$REPO_DIR/.mcp.json" <<EOF
 {
