@@ -1,0 +1,17 @@
+{
+  "_comment": "Template only. Run ./setup.sh to generate a real .mcp.json with correct absolute paths for your machine. Do not commit your generated .mcp.json — it is gitignored.",
+  "mcpServers": {
+    "google-sheets": {
+      "command": "uvx",
+      "args": ["mcp-google-sheets@latest"],
+      "env": {
+        "SERVICE_ACCOUNT_PATH": "/full/path/to/service-account-key.json",
+        "DRIVE_FOLDER_ID": "your_shared_drive_folder_id"
+      }
+    },
+    "whatsapp": {
+      "command": "uv",
+      "args": ["--directory", "./whatsapp-mcp/whatsapp-mcp-server", "run", "main.py"]
+    }
+  }
+}

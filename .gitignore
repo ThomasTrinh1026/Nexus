@@ -1,0 +1,14 @@
+# --- Generated per-machine: contains absolute paths + secrets. Run ./setup.sh to recreate. ---
+/.mcp.json
+
+# --- Cloned at setup time (upstream project, kept out of this repo so it stays current). ---
+/whatsapp-mcp/
+
+# --- Secrets / credentials — NEVER commit these. ---
+*service-account*.json
+credentials.json
+token.json
+*.token
+
+# OS junk
+.DS_Store
