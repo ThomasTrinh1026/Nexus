@@ -58,9 +58,17 @@ say "Building the WhatsApp bridge (downloads deps, verifies it compiles)..."
 say "Bridge builds OK."
 
 # --- 5. Generate .mcp.json for THIS machine -------------------------------------
-say "Google Sheets credentials (press Enter to skip and fill in later)."
-read -r -p "  Path to service-account JSON key: " SA_PATH || true
-read -r -p "  Google Drive folder ID (shared w/ the service account): " DRIVE_ID || true
+say "Google Sheets setup (optional — press Enter at both prompts to skip)."
+cat <<'EOF'
+  Google Sheets needs a "service account" key file. Quick version (full steps in SETUP.md):
+    1. https://console.cloud.google.com  ->  enable "Google Sheets API" + "Google Drive API"
+    2. IAM & Admin -> Service Accounts -> create one -> Keys -> Add key -> JSON (downloads a file)
+    3. In Google Drive, make a folder and Share it with the service account's email
+       (the "client_email" in that JSON, ends in ...iam.gserviceaccount.com)
+  Skip this if you only want WhatsApp — you can fill it in later by editing .mcp.json.
+EOF
+read -r -p "  Path to the service-account JSON key: " SA_PATH || true
+read -r -p "  Google Drive folder ID (from the folder's URL): " DRIVE_ID || true
 SA_PATH="${SA_PATH:-/REPLACE/with/path/to/service-account-key.json}"
 DRIVE_ID="${DRIVE_ID:-REPLACE_with_shared_drive_folder_id}"
 
@@ -101,3 +109,18 @@ Setup complete. Two things left, both one-time:
 Then restart Claude Code (or run /mcp) to load the servers.
 ------------------------------------------------------------------
 EOF
+
+# Offer to launch the bridge right now (only when run interactively).
+if [ -t 0 ]; then
+  printf '\nStart the WhatsApp bridge now and show the QR code to scan? [y/N] '
+  read -r ANS || true
+  case "${ANS:-}" in
+    [Yy]*)
+      say "Starting bridge — scan the QR with WhatsApp > Settings > Linked Devices. Ctrl-C to stop."
+      exec "$REPO_DIR/start-whatsapp-bridge.sh"
+      ;;
+    *)
+      echo "OK — run ./start-whatsapp-bridge.sh whenever you're ready."
+      ;;
+  esac
+fi
